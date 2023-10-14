@@ -93,7 +93,8 @@ async def ask_file(data: llm_ask, id:int, user=Depends(get_current_user)):
             status_code=400,
             detail='The file it\'s from another user',
         )
-    history = get_history(id, limit=10)
+    history = get_history(id, limit=10, order_desc=True)
+    history = history[::-1]
     history_arr = [(obj.pregunta, obj.respuesta) for obj in history]
     response = ask(file.index_path, data.question, history_arr)
     create_history(data.question, response, id)
