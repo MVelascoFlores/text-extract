@@ -13,6 +13,8 @@ from sql_app.crud import (
     login as crud_login,
     get_files as crud_get_files,
     is_file_from_user as crud_is_file_from_user,
+    create_history as crud_create_history,
+    get_history as crud_get_history,
 )
 
 models.Base.metadata.create_all(bind=engine)
@@ -50,3 +52,18 @@ def is_file_from_user(user:int, file:int, db: Session = session_local()):
     if from_user:
         return from_user
     return None
+
+def create_history(pregunta:str,
+                   respuesta:str,
+                   file:int,
+                   db: Session = session_local()):
+    history: schemas.HistoryCreate = {
+        'pregunta': pregunta,
+        'respuesta': respuesta,
+    }
+    return crud_create_history(db, history, file)
+
+def get_history(file_id:int, 
+                skip: int = 0, limit: int = 100,
+                db: Session = session_local()):
+    return crud_get_history(db, file_id, skip, limit)

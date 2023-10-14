@@ -96,6 +96,6 @@ def ask(path, question, history=None):
         'chat_history':[]
     }
     if history:
-        question_object['chat_history']: history
+        question_object['chat_history'] = history
     result = qa_chain(question_object)
     return result['answer']

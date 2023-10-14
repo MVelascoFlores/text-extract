@@ -1,4 +1,5 @@
 import bcrypt
+import uuid
 
 from sqlalchemy.orm import Session
 
@@ -58,3 +59,19 @@ def is_file_from_user(db: Session, user:int, file:int):
     return db.query(models.File).filter(
         models.File.id == file,
         models.File.owner_id == user).first()
+
+def create_history(db: Session, 
+                   history:schemas.HistoryCreate,
+                   file:int):
+    history['id'] = str(uuid.uuid4())
+    db_history = models.FilesHistory(**history, file_id=file)
+    db.add(db_history)
+    db.commit()
+    db.refresh(db_history)
+    return db_history
+
+def get_history(db: Session, file_id:int, 
+                skip: int = 0, limit: int = 100):
+    return db.query(models.FilesHistory).filter(
+                models.FilesHistory.file_id == file_id
+            ).order_by('fecha').offset(skip).limit(limit).all()
