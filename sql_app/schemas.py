@@ -1,9 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 from datetime import datetime
 
 
 class HistoryBase(BaseModel):
-    id: int
+    id: UUID4
     pregunta: str
     respuesta: str
 

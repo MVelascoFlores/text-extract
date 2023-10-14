@@ -2,6 +2,7 @@ import bcrypt
 import uuid
 
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 
 from sql_app import models, schemas
 
@@ -71,7 +72,10 @@ def create_history(db: Session,
     return db_history
 
 def get_history(db: Session, file_id:int, 
-                skip: int = 0, limit: int = 100):
+                skip: int = 0, limit: int = 100, order_desc=False):
+    order = models.FilesHistory.fecha
+    if order_desc:
+        order = desc(order)
     return db.query(models.FilesHistory).filter(
                 models.FilesHistory.file_id == file_id
-            ).order_by('fecha').offset(skip).limit(limit).all()
+            ).order_by(order).offset(skip).limit(limit).all()

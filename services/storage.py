@@ -65,5 +65,6 @@ def create_history(pregunta:str,
 
 def get_history(file_id:int, 
                 skip: int = 0, limit: int = 100,
+                order_desc=False,
                 db: Session = session_local()):
-    return crud_get_history(db, file_id, skip, limit)
+    return crud_get_history(db, file_id, skip, limit, order_desc)

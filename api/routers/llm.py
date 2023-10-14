@@ -3,6 +3,7 @@ from fastapi import (
     UploadFile,
     HTTPException,
     Depends,
+    Query,
 )
 
 from services.llm import (
@@ -19,6 +20,8 @@ from services.auth import (
     oauth2_scheme,
     get_current_user,
 )
+
+from sql_app.schemas import HistoryBase
 
 from sql_app import schemas
 
@@ -54,6 +57,26 @@ async def upload_file(file: UploadFile,
             'id':file_object.id
         }
     }
+
+@router.get('/file/{id}/',
+             status_code=200,
+             response_model=list[HistoryBase],
+             dependencies=[
+                 Depends(oauth2_scheme),
+             ])
+async def get_file_history(id: int, skip: int=Query(default=0),
+                           limit: int=Query(default=10), 
+                           user=Depends(get_current_user)):
+    """
+        get history from specific file
+    """
+    file = is_file_from_user(user.id, id)
+    if file is None:
+        raise HTTPException(
+            status_code=400,
+            detail='The file it\'s from another user',
+        )
+    return get_history(id, skip, limit, True)
 
 @router.post('/file/{id}/',
              status_code=200,
